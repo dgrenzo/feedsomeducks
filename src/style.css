@@ -1,0 +1,13 @@
+body {
+  margin:0px;
+  padding:0px;
+  background-image: linear-gradient(#d080ff, #88d9ff);
+}
+
+canvas {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
