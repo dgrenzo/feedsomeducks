@@ -1,5 +1,5 @@
 import { VertexMat, COLOR } from './assets.js';
-import { BoxGeometry, Float32BufferAttribute, Mesh, Object3D, Vector3 }  from './three/Three.js';
+import { BoxGeometry, Float32BufferAttribute, Mesh, Object3D, Vector2, Vector3 }  from './three/Three.js';
 import { setPosition, setScale } from './util.js';
 
 function getMesh(color) {
@@ -18,13 +18,22 @@ function getMesh(color) {
 
 
 export function Duck() {
-  this.velocity = {
-    x : 0,
-    y : 0
-  }
+
+  this.max_wander = Math.random() * 50 + 10;
+  this.cohesion_distance = Math.random() * 5 + 1.5;
+  this.align_distance = this.cohesion_distance + 2 + Math.random() * 4;
+
+  this.position = new Vector2(0,0);
+  this.velocity = new Vector2(Math.random() - 0.5, Math.random() * 0.5);
+
   this.angle = 0;
 
   this.root = new Object3D();
+  this.model_root = new Object3D();
+
+  this.root.add(this.model_root);
+  this.model_root.rotateY(-Math.PI / 2)
+
   const bones = {};
   const meshes = {};
 
@@ -40,11 +49,11 @@ export function Duck() {
   meshes.right_foot = getMesh(COLOR.ORANGE);
   
   setPosition(bones.head, 1, 1, 0);
-  this.root.add(bones.head);
+  this.model_root.add(bones.head);
   setPosition(bones.bill, 0.6, -0.1, 0);
   bones.head.add(bones.bill);
   setScale(meshes.body, 1.75, 1.35, 1.25);
-  this.root.add(meshes.body);
+  this.model_root.add(meshes.body);
   setScale(meshes.head, 1, 1, 1);
   bones.head.add(meshes.head);
   setScale(meshes.left_eye, 0.15, 0.15, 0.15);
@@ -57,7 +66,7 @@ export function Duck() {
   bones.bill.add(meshes.bill);
 
   setPosition(bones.feet, -0.2, -0.7, 0);
-  this.root.add(bones.feet);
+  this.model_root.add(bones.feet);
   setPosition(meshes.left_foot, 0, 0, 0.2);
   setScale(meshes.left_foot, 0.2, 1, 0.6);
   bones.feet.add(meshes.left_foot);
@@ -85,13 +94,25 @@ export function Duck() {
     bones.head.rotateX(Math.sin(now / 200) / 125);
     bones.feet.rotateZ( Math.PI / -25 );
 
-    const vec = new Vector3();
-    this.root.getWorldDirection(vec);
+    // this.velocity.multiplyScalar(0.995);
 
+    const MAX_SPEED = 0.45;
 
-    this.root.translateX(1/ 10);
+    if (this.velocity.length() > MAX_SPEED) {
+      this.velocity.setLength(MAX_SPEED);
+    }
 
-    this.root.rotateY( Math.PI / 250);
+    const scale = 0.2;
+
+    this.root.position.x += this.velocity.x * scale;
+    this.root.position.z += this.velocity.y * scale;
+
+    this.root.lookAt(
+      this.root.position.x + this.velocity.x,
+      this.root.position.y,
+      this.root.position.z + this.velocity.y
+    )
+
     this.root.rotateZ( Math.sin(now / 200) / 400);
   }
 }

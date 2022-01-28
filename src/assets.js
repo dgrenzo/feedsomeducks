@@ -34,7 +34,7 @@ export const VertexMat = new RawShaderMaterial( {
     vec3 fogColor = vec3(240./255., 128./255., 1.);
     float getFogFactor(float d)
     {
-      const float FogMax = 65.0;
+      const float FogMax = 75.0;
       const float FogMin = 10.0;
 
       if (d>=FogMax) return 1.;
@@ -47,13 +47,13 @@ export const VertexMat = new RawShaderMaterial( {
 
       vec3 color;
       
-      if (vHeight < -6.4) {
+      if (vHeight < -6.75) {
         color = mix(vColor.rgb, waterColor, 0.65);
       } else {
         color = vec3(vColor.rgb);
       }
 
-      float fog_alpha = getFogFactor(vDepth);
+      float fog_alpha = min(0.4, getFogFactor(vDepth));
       color = mix(color, fogColor, fog_alpha);
       
       
