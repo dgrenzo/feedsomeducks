@@ -1,2 +1,4 @@
 .vscode/
 src/three/
+node_modules/
+package-lock.json
